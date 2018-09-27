@@ -1,0 +1,17 @@
+{
+  "name": "bitserve",
+  "version": "0.0.2",
+  "description": "bitdb microservice",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bitquery": "^0.2.7",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "ip": "^1.1.5"
+  }
+}
