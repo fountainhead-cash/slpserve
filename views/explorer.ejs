@@ -165,9 +165,9 @@ td.cell {
 </style>
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-<script src="ace.js"></script>
-<script src="mode-json.js"></script>
-<script src="handlebars.min.js"></script>
+<script src="/ace.js"></script>
+<script src="/mode-json.js"></script>
+<script src="/handlebars.min.js"></script>
 <script id="grid-template" type="text/x-handlebars-template">
   <table>
   <tr>
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
   })
   editor.getSession().on('change', function() {
     var query = editor.getValue();
-    history.pushState(null, null, "https://bitdb.network/explorer/" + btoa(query));
+    history.pushState(null, null, window.location.origin + "/explorer/" + btoa(query));
     updateUrl(query)
   })
   run()
@@ -226,7 +226,7 @@ var run = function() {
     try {
       // make sure it's JSON
       var parsed = JSON.parse(query)
-      if ((parsed && parsed.request) || (parsed && parsed.v && parsed.v == 2) ) {
+      if ((parsed && parsed.request) || (parsed && parsed.v && parsed.v >= 2) ) {
         updateUrl(query)
         document.querySelector("main #confirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
         document.querySelector("main #unconfirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
@@ -237,20 +237,20 @@ var run = function() {
         }).then(function(r) { 
           return r.json()
         }).then(function(r) {
-          if (r.unconfirmed) {
-            render("#unconfirmed", r.unconfirmed)
+          if (r.u) {
+            render("#unconfirmed", r.u)
           } else {
             render("#unconfirmed", [])
           }
-          if (r.confirmed) {
-            render("#confirmed", r.confirmed)
+          if (r.c) {
+            render("#confirmed", r.c)
           } else {
             render("#confirmed", [])
           }
         })
       }
     } catch (e) {
-      console.log("query invalid json")
+      console.log("query invalid json", e)
     }
   }
 }
@@ -262,6 +262,28 @@ var updateUrl = function(query) {
   setTimeout(function() {
     u.classList.remove("updated");
   }, 500)
+}
+var matryoshka = function(nested_keys, rows) {
+  return rows.map(function(row) {
+    return {
+      values: nested_keys.map(function(k) {
+        if (Array.isArray(row[k])) {
+          let nested_nested_keys = Object.keys(row[k][0])
+          var rendered = matryoshka(nested_nested_keys, row[k])
+          let nested_nested = template({
+            keys: nested_nested_keys,
+            items: rendered
+          })
+          return { k: null, v: nested_nested }
+        } else if (typeof row[k] === 'object') {
+          var c = JSON.stringify(row[k], null, 2)
+          return { k: k, v: "<pre>" + c + "</pre>" }
+        } else {
+          return { k: k, v: Handlebars.Utils.escapeExpression(row[k]) }
+        }
+      })
+    }
+  })
 }
 var render = function(selector, items) {
   if (items.length > 0) {
@@ -276,7 +298,6 @@ var render = function(selector, items) {
     .filter(function(k) {
       return k !== "_id"
     })
-    keys.unshift("_id")
     document.querySelector(selector + " .label span").innerHTML = "(" + items.length + ")"
 
     document.querySelector(selector + " .content").innerHTML = template({
@@ -287,64 +308,25 @@ var render = function(selector, items) {
             let first_row = i[key][0];
             let rows = i[key];
             let nested_keys = Object.keys(first_row)
+            var rendered = matryoshka(nested_keys, rows)
             let nested = template({
               keys: nested_keys,
-              items: rows.map(function(row) {
-                return {
-                  values: nested_keys.map(function(k) {
-                    if (typeof row[k] === 'object') {
-                      return {
-                        k: k,
-                        v: "<pre>" + JSON.stringify(row[k], null, 2) + "</pre>"
-                      }
-                    } else {
-                      return {
-                        k: k,
-                        v: Handlebars.Utils.escapeExpression(row[k])
-                      }
-                    }
-                  })
-                }
-              })
+              items: rendered
             })
-            return {
-              k: null,
-              v: nested
-            }
+            return { k: null, v: nested }
           } else if (typeof i[key] === 'object') {
             //return JSON.stringify(i[key], null, 2);
             let row = i[key];
             let rows = [row];
             let nested_keys = Object.keys(row)
+            var rendered = matryoshka(nested_keys, rows)
             let nested = template({
               keys: nested_keys,
-              items: rows.map(function(row) {
-                return {
-                  values: nested_keys.map(function(k) {
-                    if (typeof row[k] === 'object') {
-                      return {
-                        k: k,
-                        v: "<pre>" + JSON.stringify(row[k], null, 2) + "</pre>"
-                      }
-                    } else {
-                      return {
-                        k: k, 
-                        v: Handlebars.Utils.escapeExpression(row[k])
-                      }
-                    }
-                  })
-                }
-              })
+              items: rendered
             })
-            return {
-              k: null,
-              v: nested
-            }
+            return { k: null, v: nested }
           } else {
-            return {
-              k: null,
-              v: Handlebars.Utils.escapeExpression(i[key])
-            }
+            return { k: null, v: Handlebars.Utils.escapeExpression(i[key]) }
           }
         })}
       })

@@ -1,6 +1,7 @@
+require('dotenv').config()
 const config = require('./bitserve.json')
 const express = require('express')
-const bitquery = require('bitquery')
+const bitqueryd = require('bitqueryd')
 const ip = require('ip')
 const app = express()
 var db;
@@ -16,18 +17,17 @@ app.get(/^\/q\/(.+)/, async function(req, res) {
   }
   res.json(result)
 })
+app.get(/^\/explorer\/(.+)/, function(req, res) {
+  let encoded = req.params[0]
+  let decoded = Buffer.from(encoded, 'base64').toString()
+  res.render('explorer', { code: decoded })
+});
 app.get('/explorer', function (req, res) {
   res.render('explorer', { code: JSON.stringify(config.query, null, 2) })
 });
-app.get(/^\/explorer\/(.+)/, function(req, res) {
-  let encoded = req.params[0]
-  res.render('explorer', {
-    code: new Buffer(encoded, 'base64').toString(),
-  })
-});
 var run = async function() {
-  db = await bitquery.init({
-    url: config.url,
+  db = await bitqueryd.init({
+    url: (config.url ? config.url : process.env.url),
     timeout: config.timeout
   })
   app.listen(config.port, () => {
