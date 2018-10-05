@@ -1,6 +1,6 @@
 {
   "name": "bitserve",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "bitdb microservice",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bitqueryd": "^0.1.1",
+    "bitqueryd": "^0.1.7",
     "dotenv": "^6.0.0",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
