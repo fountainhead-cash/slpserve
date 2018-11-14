@@ -1,6 +1,6 @@
 {
   "name": "bitserve",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "bitdb microservice",
   "main": "index.js",
   "scripts": {
@@ -13,6 +13,7 @@
     "dotenv": "^6.0.0",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
-    "ip": "^1.1.5"
+    "ip": "^1.1.5",
+    "p-queue": "^3.0.0"
   }
 }

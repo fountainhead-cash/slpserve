@@ -2,20 +2,39 @@ require('dotenv').config()
 const config = require('./bitserve.json')
 const express = require('express')
 const bitqueryd = require('bitqueryd')
+const PQueue = require('p-queue')
 const ip = require('ip')
 const app = express()
+const concurrency = ((config.concurrency && config.concurrency.aggregate) ? config.concurrency.aggregate : 3)
+const queue = new PQueue({concurrency: concurrency});
 var db;
 app.set('view engine', 'ejs');
 app.use(express.static('public'))
 app.get(/^\/q\/(.+)/, async function(req, res) {
   var encoded = req.params[0];
   let r = JSON.parse(new Buffer(encoded, "base64").toString());
-  let result = await db.read(r)
-  if (config.log) {
-    console.log("query = ", r)
-    console.log("response = ", result)
+  if (r.q && r.q.aggregate) {
+    // add to aggregate queue
+    console.log("# Aggregate query. Adding to queue", queue.size)
+    queue.add(async function() {
+      // regular read
+      let result = await db.read(r)
+      if (config.log) {
+        console.log("query = ", r)
+        console.log("response = ", result)
+      }
+      console.log("Done", queue.size-1)
+      res.json(result)
+    })
+  } else {
+    // regular read
+    let result = await db.read(r)
+    if (config.log) {
+      console.log("query = ", r)
+      console.log("response = ", result)
+    }
+    res.json(result)
   }
-  res.json(result)
 })
 app.get(/^\/explorer\/(.+)/, function(req, res) {
   let encoded = req.params[0]
