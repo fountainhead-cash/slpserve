@@ -38,7 +38,7 @@ You must have the following installed.
 Step 1. Clone this repository
 
 ```
-git clone https://github.com/21centurymotorcompany/bitserve.git
+git clone https://github.com/fountainhead-cash/bitserve.git
 ```
 
 Step 2. Install Dependencies
