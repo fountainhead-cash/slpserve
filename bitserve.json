@@ -1,6 +1,6 @@
 {
   "query": {
-    "v": 2,
+    "v": 3,
     "q": { "find": {}, "limit": 10 }
   },
   "url": "mongodb://localhost:27017",
