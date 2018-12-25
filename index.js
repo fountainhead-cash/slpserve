@@ -61,7 +61,8 @@ app.get('/', function(req, res) {
 var run = async function() {
   db = await bitqueryd.init({
     url: (config.url ? config.url : process.env.url),
-    timeout: config.timeout
+    timeout: config.timeout,
+    name: config.name
   })
   app.listen(config.port, () => {
     console.log("######################################################################################");
