@@ -4,10 +4,40 @@ const express = require('express')
 const bitqueryd = require('bitqueryd')
 const ip = require('ip')
 const app = express()
-var db;
-app.set('view engine', 'ejs');
+const rateLimit = require("express-rate-limit")
+const cors = require("cors")
+var db
+
+app.set('view engine', 'ejs')
 app.use(express.static('public'))
-app.get(/^\/q\/(.+)/, async function(req, res) {
+
+// create rate limiter for API endpoint,ß bypass whitelisted IPs
+var whitelist = []
+if (process.env.whitelist) {
+  whitelist = process.env.whitelist.split(',')
+}
+app.use(cors())
+app.enable("trust proxy")
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute window
+  max: 60, // 60 requests per windowMs
+  handler: function(req, res, /*next*/) {
+    res.format({
+      json: function() {
+        res.status(500).json({
+          error: "Too many requests. Limits are 60 requests per minute."
+        })
+      }
+    })
+  },
+  skip: function (req, /*res*/) {
+    if (whitelist.includes(req.ip)) {
+      return true
+    }
+    return false
+  }
+})
+app.get(/^\/q\/(.+)/, cors(), limiter, async function(req, res) {
   var encoded = req.params[0];
   let r = JSON.parse(new Buffer(encoded, "base64").toString());
   let result = await db.read(r)
@@ -24,6 +54,9 @@ app.get(/^\/explorer\/(.+)/, function(req, res) {
 });
 app.get('/explorer', function (req, res) {
   res.render('explorer', { code: JSON.stringify(config.query, null, 2) })
+});
+app.get('/', function(req, res) {
+  res.redirect('/explorer')
 });
 var run = async function() {
   db = await bitqueryd.init({
