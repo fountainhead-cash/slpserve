@@ -65,6 +65,7 @@ app.get(/^\/q\/(.+)/, cors(), limiter, async function(req, res) {
     }
     res.json(result)
   }
+})
 app.get(/^\/explorer\/(.+)/, function(req, res) {
   let encoded = req.params[0]
   let decoded = Buffer.from(encoded, 'base64').toString()
