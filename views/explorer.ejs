@@ -1,18 +1,20 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BitDB Fountainhead</title>
 <style>
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
 body {
-  font-family: "Helvetica Neue", helvetica, arial;
+  font-family: 'Noto Sans TC', sans-serif;
   font-size: 12px;
   margin: 0;
-  background: #2a2a2a;
+  background: #202124;
 }
 .content {
   border-bottom: 1px rgba(255,255,255,0.1) solid;
 }
 .container {
-  background: #2a2a2a;
+  background: #202124;
   color: white;
 }
 header {
@@ -112,16 +114,18 @@ td {
   height: 200px;
 }
 .label {
-  background: #2a2a2a;
+  background: #202124;
   color: white;
   padding: 5px 10px;
 }
 button {
-  padding: 10px;
-  background: gold;
-  border: none;
-  font-size: 14px;
-  font-weight: bold;
+    padding: 10px;
+    background: #202124;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
 }
 button:focus {
   outline: 0;
@@ -136,7 +140,7 @@ input.url:focus{
 }
 input.url {
   padding: 10px;
-  background: rgba(0,0,0,0.8);
+  background: rgb(57, 59, 66);
   border: none;
   color: white;
   font-family: Menlo, monaco, Courier;
@@ -341,9 +345,9 @@ var render = function(selector, items) {
 <body>
   <div class='container'>
     <header>
-      <a href='/' class='brand'>bitdb</a>
+      <a href='/' class='brand'>BitDB Fountainhead</a>
       <div class='flexible'></div>
-      <a href='https://docs.bitdb.network' class='item'><i class='fas fa-book'></i> Docs</a>
+      <a target='_blank' href='https://docs.fountainhead.cash' class='item'><i class='fas fa-book'></i> Docs</a>
     </header>
     <div class='jumbotron align-center header'>
       <div id='editor'><%=code%></div>
