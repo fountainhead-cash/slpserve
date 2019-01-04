@@ -1,6 +1,7 @@
 
 <html>
 <head>
+<title>BitDB Fountainhead</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
@@ -235,7 +236,7 @@ var run = function() {
       if ((parsed && parsed.request) || (parsed && parsed.v) ) {
 		updateUrl(query)
 		document.querySelector("main #confirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
-        document.querySelector("main #unconfirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
+		document.querySelector("main #unconfirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
 		
           fetch(endpoint + btoa(query), {
           }).then(function(r) {
@@ -358,12 +359,12 @@ var render = function(selector, items) {
       <a target='_blank' href='https://docs.fountainhead.cash' class='item'><i class='fas fa-book'></i> Documentation</a>
     </header>
     <div class='jumbotron align-center header'>
-	<div id='editor'><%=code%></div>
-      <div class='flex'>
-        <span class='label'>API endpoint</span>
-        <input readonly class='flexible url'>
-        <button id='query'>Run query</button>
-      </div>
+		<div id='editor'><%=code%></div>
+		<div class='flex'>
+			<span class='label'>API endpoint</span>
+			<input readonly class='flexible url'>
+			<button id='query'>Run query</button>
+		</div>
     </div>
   </div>
   <main>
