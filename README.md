@@ -10,7 +10,7 @@ An API Endpoint + Web Query UI for BitDB
 This project contains:
 
 1. BitDB Microservice API Endpoint: An HTTP API Endpoint to your BitDB
-2. BitDB Query Web UI: As seen in [https://bitdb.network/v2/explorer](https://bitdb.network/v2/explorer)
+2. BitDB Query Web UI: As seen in [https://bitdb.fountainhead.cash/explorer](https://bitdb.fountainhead.cash/explorer)
 
 ## 1. BitDB Microservice API Endpoint
 
@@ -84,4 +84,4 @@ Here's what each attribute represents:
 # Join the Community
 
 - Twitter: Follow the creator [@_unwriter](https://twitter.com/_unwriter)
-- Chat: Join bitdb Telegram channel, ask questions, share your projects, etc. [Open chat](https://t.me/joinchat/HH1DDQ8pZlSlsdNcKgIcxw)
+- Chat: Join bitdb Telegram channel, ask questions, share your projects, etc. [Open chat](http://t.me/fountainheadcash)
