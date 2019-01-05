@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bitqueryd": "^0.1.7",
+    "fountainhead-bitqueryd": "^0.1.7",
     "cors": "^2.8.5",
     "dotenv": "^6.0.0",
     "ejs": "^2.6.1",
