@@ -1,7 +1,7 @@
 require('dotenv').config()
 const config = require('./bitserve.json')
 const express = require('express')
-const bitqueryd = require('bitqueryd')
+const bitqueryd = require('fountainhead-bitqueryd')
 const PQueue = require('p-queue')
 const ip = require('ip')
 const app = express()
