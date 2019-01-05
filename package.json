@@ -1,5 +1,5 @@
 {
-  "name": "bitserve",
+  "name": "fountainhead-bitserve",
   "version": "0.0.4",
   "description": "bitdb microservice",
   "main": "index.js",
