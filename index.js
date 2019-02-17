@@ -105,7 +105,7 @@ var run = async function() {
     console.log(`#  Explorer: ${ip.address()}:${config.port}/explorer`);
     console.log(`#  API Endpoint: ${ip.address()}:${config.port}/q`);
     console.log("#")
-    console.log("#  Learn more at https://docs.bitdb.network")
+    console.log("#  Learn more at https://docs.fountainhead.cash")
     console.log("#")
     console.log("######################################################################################");
   })
