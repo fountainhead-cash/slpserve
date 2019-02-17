@@ -30,7 +30,7 @@ Makes use of the API endpoint to render the query UI
 You must have the following installed.
 
 1. Bitcoin Full Node: Any BCH node implementation
-2. Bitdb Node: Bitdb is a universal bitcoin database that autonomously synchronizes with Bitcoin https://bitdb.network
+2. Bitdb Node: Bitdb is a universal bitcoin database that autonomously synchronizes with Bitcoin https://github.com/fountainhead-cash/bitd
 
 
 # Install
@@ -55,33 +55,8 @@ npm start
 
 # Configure
 
-You can configure the service through [bitserve.json](bitserve.json)
-
-
-Example:
-
-```
-{
-  "query": {
-    "v": 2,
-    "q": { "find": {}, "limit": 10 }
-  },
-  "port": 3000,
-  "url": "mongodb://localhost:27017",
-  "timeout": 30000,
-  "log": false,
-}
-```
-
-Here's what each attribute represents:
-
-- `query`: The default bitdb query to show up when you navigate to `/explorer` web UI
-- `port`: web service port
-- `url`: Mongodb URL that hosts BitDB.
-- `timeout`: default timeout for all query requests
-- `log`: `true` to see request and response logs, `false` to hide logs
+You can configure the service with .env, just copy .env.example to .env and edit it to match your system.
 
 # Join the Community
 
-- Twitter: Follow the creator [@_unwriter](https://twitter.com/_unwriter)
-- Chat: Join bitdb Telegram channel, ask questions, share your projects, etc. [Open chat](http://t.me/fountainheadcash)
+- Chat: Join fountainhead.cash Telegram channel, ask questions, share your projects, etc. [Open chat](http://t.me/fountainheadcash)
