@@ -1,5 +1,4 @@
 require('dotenv').config()
-const config = require('./bitserve.json')
 const express = require('express')
 const bitqueryd = require('fountainhead-bitqueryd')
 const PQueue = require('p-queue')
@@ -7,8 +6,22 @@ const ip = require('ip')
 const app = express()
 const rateLimit = require("express-rate-limit")
 const cors = require("cors")
+
+const config = {
+  "query": {
+    "v": 3,
+    "q": { "find": {}, "limit": 10 }
+  },
+  "name": process.env.db_name ? process.env.db_name : "bitdb",
+  "url": process.env.db_url ? process.env.db_url : "mongodb://localhost:27017",
+  "port": Number.parseInt(process.env.bitserve_port ? process.env.bitserve_port : 3000),
+  "timeout": Number.parseInt(process.env.bitserve_timeout ? process.env.bitserve_timeout : 30000),
+  "log": process.env.bitserve_log ? process.env.bitserve_log == 'true' : true
+};
+
 const concurrency = ((config.concurrency && config.concurrency.aggregate) ? config.concurrency.aggregate : 3)
 const queue = new PQueue({concurrency: concurrency})
+
 var db
 
 app.set('view engine', 'ejs')
