@@ -4,6 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
+@import url('https://fonts.googleapis.com/css?family=Inconsolata');
 body {
   font-family: 'Noto Sans TC', sans-serif;
   font-size: 12px;
@@ -45,15 +46,6 @@ header > .dark {
 .align-center {
   text-align: center;
 }
-.top.tx {
-  width: 100px;
-}
-.top._id {
-  width: 50px;
-}
-.top.blk {
-  width: 200px;
-}
 pre {
   white-space: pre-wrap; 
 }
@@ -61,10 +53,13 @@ pre {
   overflow: auto;
 }
 table {
-  background: white;
+  background: #2d2d2d;
   table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
+}
+tr:nth-child(odd) {
+  background-color: #323232;
 }
 th td {
   text-align: center;
@@ -92,7 +87,7 @@ td.top.expanded {
 td {
   word-wrap:break-word;
   font-size: 12px;
-  border: 1px solid whitesmoke;
+  /*border: 1px solid whitesmoke;*/
   padding: 5px;
   color: rgba(0,0,0,0.7);
 }
@@ -111,7 +106,6 @@ td {
 }
 #editor {
   width: 100%;
-  height: 200px;
 }
 .label {
   background: #202124;
@@ -163,32 +157,90 @@ a.brand {
 .label {
   padding: 10px;
 }
-td.cell {
-  max-height: 100px;
+.clusterize-scroll {
+    max-height:300px!important;
+}
+main {
+  margin-bottom:6rem;
+}
+.clusterize-no-data td {
+    color: #fff;
 }
 </style>
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.18.0/clusterize.min.css">
+<link rel="stylesheet" href="/jsontree.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/ace.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/mode-json.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.18.0/clusterize.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+<script src="/jsontree.js"></script>
 <script id="grid-template" type="text/x-handlebars-template">
   <table>
-  <tr>
-    {{#each keys}}
-      <td class='top {{this}}'><i class='fas fa-expand-arrows-alt'></i>{{this}}</td>
-    {{/each}}
-  </tr>
-  {{#each items}}
-    <tr>
-      {{#each values}}
-      <td valign='top' class='cell {{k}}'>{{{v}}}</td>
-      {{/each}}
-    </tr>
-  {{/each}}
+    <thead>
+      <tr>
+        {{#each keys}}
+          <td class='top {{this}}'><i class='fas fa-expand-arrows-alt'></i>{{this}}</td>
+        {{/each}}
+      </tr>
+    </thead>
+    <tbody id="clusterize_content_unconfirmed" class="clusterize-content">
+      <!--{{#each items}}
+        <tr>
+          {{#each values}}
+          <td valign='top' class='cell {{k}}'>{{{v}}}</td>
+          {{/each}}
+        </tr>
+      {{/each}}-->
+    </tbody>
   </table>
 </script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div class='container'>
+    <header>
+      <a href='/' class='brand'>BitDB Fountainhead</a>
+      <div class='flexible'></div>
+      <a target='_blank' href='https://docs.fountainhead.cash' class='item'><i class='fas fa-book'></i> Documentation</a>
+    </header>
+    <div class='jumbotron align-center header'>
+      <div id='editor'><%=code%></div>
+      <div class='flex'>
+        <span class='label'>API endpoint</span>
+        <input readonly class='flexible url'>
+        <button id='query'>Run query</button>
+      </div>
+    </div>
+  </div>
+  <main>
+    <div id='unconfirmed'>
+      <div class='label'>Unconfirmed <span></span></div>
+      <div class='content clusterize-scroll' id='unconfirmed-scroll-area'>
+        <table>
+          <tbody id="unconfirmed-content-area" class="clusterize-content">
+            <tr class="clusterize-no-data">
+              <td>Loading data…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id='confirmed'>
+      <div class='label'>Confirmed <span></span></div>
+      <div class='content clusterize-scroll' id='confirmed-scroll-area'>
+        <table>
+          <tbody id="confirmed-content-area" class="clusterize-content">
+            <tr class="clusterize-no-data">
+              <td>Loading data…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</body>
 <script>
 
 var endpoint = window.location.origin + "/q/";
@@ -231,27 +283,20 @@ var run = function() {
     try {
       // make sure it's JSON
       var parsed = JSON.parse(query)
-        console.log(parsed)
-      if ((parsed && parsed.request) || (parsed && parsed.v) ) {
-          updateUrl(query)
-          document.querySelector("main #confirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
-          document.querySelector("main #unconfirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
+      console.log(parsed)
 
-          fetch(endpoint + btoa(query), {
-          }).then(function(r) {
-            return r.json()
-          }).then(function(r) {
-            if (r.u) {
-              render("#unconfirmed", r.u)
-            } else {
-              render("#unconfirmed", [])
-            }
-            if (r.c) {
-              render("#confirmed", r.c)
-            } else {
-              render("#confirmed", [])
-            }
-          })
+      if ((parsed && parsed.request) || (parsed && parsed.v) ) {
+        updateUrl(query)
+        //document.querySelector("main #confirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
+        //document.querySelector("main #unconfirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
+
+        fetch(endpoint + btoa(query), {
+        }).then(function(r) {
+          return r.json()
+        }).then(function(r) {
+          render('unconfirmed', r.u ? r.u : [])
+          render('confirmed',   r.c ? r.c : [])
+        })
       }
     } catch (e) {
       console.log("query invalid json", e)
@@ -267,114 +312,33 @@ var updateUrl = function(query) {
     u.classList.remove("updated");
   }, 500)
 }
-var matryoshka = function(nested_keys, rows) {
-  return rows.map(function(row) {
-    return {
-      values: nested_keys.map(function(k) {
-        if (Array.isArray(row[k])) {
-          let nested_nested_keys = Object.keys(row[k][0])
-          var rendered = matryoshka(nested_nested_keys, row[k])
-          let nested_nested = template({
-            keys: nested_nested_keys,
-            items: rendered
-          })
-          return { k: null, v: nested_nested }
-        } else if (typeof row[k] === 'object') {
-          var c = JSON.stringify(row[k], null, 2)
-          return { k: k, v: "<pre>" + c + "</pre>" }
-        } else {
-          return { k: k, v: Handlebars.Utils.escapeExpression(row[k]) }
-        }
-      })
-    }
-  })
-}
-var render = function(selector, items) {
-  if (items.length > 0) {
-    // sort items by key size
-    var copied_items = JSON.parse(JSON.stringify(items))
-    var sorted_items = copied_items.sort(function(a, b) {
-      return Object.keys(b).length - Object.keys(a).length;
-    })
-    var keys = Object.keys(sorted_items[0]).sort(function(a,b) {
-      return a.length - b.length;
-    })
-    .filter(function(k) {
-      return k !== "_id"
-    })
-    document.querySelector(selector + " .label span").innerHTML = "(" + items.length + ")"
 
-    document.querySelector(selector + " .content").innerHTML = template({
-      keys: keys,
-      items: items.map(function(i) {
-      console.log("i = ", i)
-        return {values: keys.map(function(key) {
-          console.log("key = ", key)
-          if (Array.isArray(i[key])) {
-            let rows = i[key];
-            if (rows.length > 0) {
-              let first_row = i[key][0];
-              console.log('rows = ', rows)
-              console.log('first row = ', first_row)
-              let nested_keys = Object.keys(first_row)
-              var rendered = matryoshka(nested_keys, rows)
-              let nested = template({
-                keys: nested_keys,
-                items: rendered
-              })
-              return { k: null, v: nested }
-            } else {
-              return { k: null, v: "" }
-            }
-          } else if (typeof i[key] === 'object' && i[key]) {
-            //return JSON.stringify(i[key], null, 2);
-            let row = i[key];
-            let rows = [row];
-            let nested_keys = Object.keys(row)
-            var rendered = matryoshka(nested_keys, rows)
-            let nested = template({
-              keys: nested_keys,
-              items: rendered
-            })
-            return { k: null, v: nested }
-          } else {
-            return { k: null, v: Handlebars.Utils.escapeExpression(i[key]) }
-          }
-        })}
+var render = function(type, items) {
+  let data = items.map(function(i, k) {
+    console.log(k, i)
+    return "<tr><td>"+JSONTree.create(i)+"</td></tr>";
+  })
+
+  switch (type) {
+    case 'confirmed':
+      document.querySelector("#confirmed .label span").innerHTML = "(" + items.length + ")"
+
+      window.confirmed_clusterize = new Clusterize({
+        rows:       data,
+        scrollElem:  document.getElementById('confirmed-scroll-area'),
+        contentElem: document.getElementById('confirmed-content-area')
       })
-    })
-  } else {
-    document.querySelector(selector + " .label span").innerHTML = "(0)"
-    document.querySelector(selector + " .content").innerHTML = "";
+      break;
+    case 'unconfirmed':
+      document.querySelector("#unconfirmed .label span").innerHTML = "(" + items.length + ")"
+
+      window.unconfirmed_clusterize = new Clusterize({
+        rows:       data,
+        scrollElem:  document.getElementById('unconfirmed-scroll-area'),
+        contentElem: document.getElementById('unconfirmed-content-area')
+      })
+      break;
   }
 }
 </script>
-</head>
-<body>
-  <div class='container'>
-    <header>
-      <a href='/' class='brand'>BitDB Fountainhead</a>
-      <div class='flexible'></div>
-      <a target='_blank' href='https://docs.fountainhead.cash' class='item'><i class='fas fa-book'></i> Documentation</a>
-    </header>
-    <div class='jumbotron align-center header'>
-      <div id='editor'><%=code%></div>
-      <div class='flex'>
-        <span class='label'>API endpoint</span>
-        <input readonly class='flexible url'>
-        <button id='query'>Run query</button>
-      </div>
-    </div>
-  </div>
-  <main>
-    <div id='unconfirmed'>
-      <div class='label'>Unconfirmed <span></span></div>
-      <div class='content'></div>
-    </div>
-    <div id='confirmed'>
-      <div class='label'>Confirmed <span></span></div>
-      <div class='content'></div>
-    </div>
-  </main>
-</body>
 </html>
