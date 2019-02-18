@@ -12,11 +12,11 @@ const config = {
     "v": 3,
     "q": { "find": {}, "limit": 10 }
   },
-  "name": process.env.db_name ? process.env.db_name : "bitdb",
+  "name": process.env.db_name ? process.env.db_name : "slpdb",
   "url": process.env.db_url ? process.env.db_url : "mongodb://localhost:27017",
-  "port": Number.parseInt(process.env.bitserve_port ? process.env.bitserve_port : 3000),
-  "timeout": Number.parseInt(process.env.bitserve_timeout ? process.env.bitserve_timeout : 30000),
-  "log": process.env.bitserve_log ? process.env.bitserve_log == 'true' : true
+  "port": Number.parseInt(process.env.slpserve_port ? process.env.slpserve_port : 3000),
+  "timeout": Number.parseInt(process.env.slpserve_timeout ? process.env.slpserve_timeout : 30000),
+  "log": process.env.slpserve_log ? process.env.slpserve_log == 'true' : true
 };
 
 const concurrency = ((config.concurrency && config.concurrency.aggregate) ? config.concurrency.aggregate : 3)
@@ -110,8 +110,8 @@ var run = async function() {
   app.listen(config.port, () => {
     console.log("######################################################################################");
     console.log("#")
-    console.log("#  BITSERVE: BitDB Microservice")
-    console.log("#  Serving Bitcoin through HTTP...")
+    console.log("#  SLPSERVE: SLP Microservice")
+    console.log("#  Serving SLP through HTTP...")
     console.log("#")
     console.log(`#  Explorer: ${ip.address()}:${config.port}/explorer`);
     console.log(`#  API Endpoint: ${ip.address()}:${config.port}/q`);
