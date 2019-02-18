@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>BitDB Fountainhead</title>
+<title>SLPDB Fountainhead</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
@@ -203,7 +203,7 @@ main {
 <body>
   <div class='container'>
     <header>
-      <a href='/' class='brand'>BitDB Fountainhead</a>
+      <a href='/' class='brand'>SLPDB Fountainhead</a>
       <div class='flexible'></div>
       <a target='_blank' href='/explorer' class='item'><i class='fas fa-screwdriver'></i> View Tabular</a>
       <a target='_blank' href='https://docs.fountainhead.cash' class='item'><i class='fas fa-book'></i> Documentation</a>
@@ -218,6 +218,18 @@ main {
     </div>
   </div>
   <main>
+    <div id='tokens'>
+      <div class='label'>Tokens <span></span></div>
+      <div class='content clusterize-scroll' id='tokens-scroll-area'>
+        <table>
+          <tbody id="tokens-content-area" class="clusterize-content">
+            <tr class="clusterize-no-data">
+              <td>Loading data…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
     <div id='unconfirmed'>
       <div class='label'>Unconfirmed <span></span></div>
       <div class='content clusterize-scroll' id='unconfirmed-scroll-area'>
@@ -297,6 +309,7 @@ var run = function() {
         }).then(function(r) {
           return r.json()
         }).then(function(r) {
+          render('tokens', r.t ? r.t : [])
           render('unconfirmed', r.u ? r.u : [])
           render('confirmed',   r.c ? r.c : [])
         })
@@ -323,6 +336,15 @@ var render = function(type, items) {
   })
 
   switch (type) {
+    case 'tokens':
+      document.querySelector("#tokens .label span").innerHTML = "(" + items.length + ")"
+
+      window.confirmed_clusterize = new Clusterize({
+        rows:       data,
+        scrollElem:  document.getElementById('tokens-scroll-area'),
+        contentElem: document.getElementById('tokens-content-area')
+      })
+      break;
     case 'confirmed':
       document.querySelector("#confirmed .label span").innerHTML = "(" + items.length + ")"
 

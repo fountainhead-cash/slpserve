@@ -1,28 +1,28 @@
-# bitserve
+# slpserve
 
-> Bitdb Microservice
+> SLPDB Microservice
 
-An API Endpoint + Web Query UI for BitDB
+An API Endpoint + Web Query UI for SLPDB
 
 
 # How it works
 
 This project contains:
 
-1. BitDB Microservice API Endpoint: An HTTP API Endpoint to your BitDB
-2. BitDB Query Web UI: As seen in [https://bitdb.fountainhead.cash/explorer](https://bitdb.fountainhead.cash/explorer)
+1. SLPDB Microservice API Endpoint: An HTTP API Endpoint to your SLPDB
+2. SLPDB Query Web UI: As seen in [https://slpdb.fountainhead.cash/explorer](https://slpdb.fountainhead.cash/explorer)
 
-## 1. BitDB Microservice API Endpoint
+## 1. SLPDB Microservice API Endpoint
 
-Make HTTP requests to your bitdb node
+Make HTTP requests to your SLPDB node
 
 ![api](public/api.png)
 
-## 2. BitDB Query Web UI
+## 2. SLPDB Query Web UI
 
 Makes use of the API endpoint to render the query UI
 
-![query](public/bitserve.png)
+![query](public/slpserve.png)
 
 
 # Prerequisites
@@ -30,7 +30,7 @@ Makes use of the API endpoint to render the query UI
 You must have the following installed.
 
 1. Bitcoin Full Node: Any BCH node implementation
-2. Bitdb Node: Bitdb is a universal bitcoin database that autonomously synchronizes with Bitcoin https://github.com/fountainhead-cash/bitd
+2. SLPDB Node: SLPDB is a universal SLP database that autonomously synchronizes with Bitcoin https://github.com/simpleledger/SLPDB
 
 
 # Install
@@ -38,7 +38,7 @@ You must have the following installed.
 Step 1. Clone this repository
 
 ```
-git clone https://github.com/fountainhead-cash/bitserve.git
+git clone https://github.com/fountainhead-cash/slpserve.git
 ```
 
 Step 2. Install Dependencies

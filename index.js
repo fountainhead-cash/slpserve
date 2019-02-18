@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require('express')
-const bitqueryd = require('fountainhead-bitqueryd')
+const slpqueryd = require('fountainhead-slpqueryd')
 const PQueue = require('p-queue')
 const ip = require('ip')
 const app = express()
@@ -102,7 +102,7 @@ app.get('/', function(req, res) {
   res.redirect('/explorer')
 });
 var run = async function() {
-  db = await bitqueryd.init({
+  db = await slpqueryd.init({
     url: (config.url ? config.url : process.env.url),
     timeout: config.timeout,
     name: config.name

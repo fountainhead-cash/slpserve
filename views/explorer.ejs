@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>BitDB Fountainhead</title>
+<title>SLPDB Fountainhead</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
@@ -234,6 +234,7 @@ var run = function() {
         console.log(parsed)
       if ((parsed && parsed.request) || (parsed && parsed.v) ) {
           updateUrl(query)
+          document.querySelector("main #tokens .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
           document.querySelector("main #confirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
           document.querySelector("main #unconfirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
 
@@ -241,6 +242,11 @@ var run = function() {
           }).then(function(r) {
             return r.json()
           }).then(function(r) {
+            if (r.t) {
+              render("#tokens", r.t)
+            } else {
+              render("#tokens", [])
+            }
             if (r.u) {
               render("#unconfirmed", r.u)
             } else {
@@ -353,7 +359,7 @@ var render = function(selector, items) {
 <body>
   <div class='container'>
     <header>
-      <a href='/' class='brand'>BitDB Fountainhead</a>
+      <a href='/' class='brand'>SLPDB Fountainhead</a>
       <div class='flexible'></div>
       <a target='_blank' href='/explorer2' class='item'><i class='fas fa-wrench'></i> View Raw</a>
       <a target='_blank' href='https://docs.fountainhead.cash' class='item'><i class='fas fa-book'></i> Documentation</a>
@@ -368,6 +374,10 @@ var render = function(selector, items) {
     </div>
   </div>
   <main>
+    <div id='tokens'>
+      <div class='label'>Tokens <span></span></div>
+      <div class='content'></div>
+    </div>
     <div id='unconfirmed'>
       <div class='label'>Unconfirmed <span></span></div>
       <div class='content'></div>
