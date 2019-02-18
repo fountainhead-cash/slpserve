@@ -262,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
   })
   editor.getSession().on('change', function() {
     var query = editor.getValue();
-    history.pushState(null, null, window.location.origin + "/explorer/" + btoa(query));
+    history.pushState(null, null, window.location.origin + "/explorer2/" + btoa(query));
     updateUrl(query)
   })
   run()
