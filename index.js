@@ -90,6 +90,17 @@ app.get('/explorer', function (req, res) {
 app.get('/', function(req, res) {
   res.redirect('/explorer')
 });
+app.get(/^\/explorer2\/(.+)/, function(req, res) {
+  let encoded = req.params[0]
+  let decoded = Buffer.from(encoded, 'base64').toString()
+  res.render('explorer2', { code: decoded })
+});
+app.get('/explorer2', function (req, res) {
+  res.render('explorer2', { code: JSON.stringify(config.query, null, 2) })
+});
+app.get('/', function(req, res) {
+  res.redirect('/explorer')
+});
 var run = async function() {
   db = await bitqueryd.init({
     url: (config.url ? config.url : process.env.url),
