@@ -88,7 +88,7 @@ app.get('/explorer', function (req, res) {
   res.render('explorer', { code: JSON.stringify(config.query, null, 2) })
 });
 app.get('/', function(req, res) {
-  res.redirect('/explorer')
+  res.redirect('/explorer2')
 });
 app.get(/^\/explorer2\/(.+)/, function(req, res) {
   let encoded = req.params[0]
