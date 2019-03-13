@@ -254,6 +254,42 @@ main {
         </table>
       </div>
     </div>
+    <div id='graphs'>
+      <div class='label'>Graphs <span></span></div>
+      <div class='content clusterize-scroll' id='graphs-scroll-area'>
+        <table>
+          <tbody id="graphs-content-area" class="clusterize-content">
+            <tr class="clusterize-no-data">
+              <td>Loading data…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id='addresses'>
+      <div class='label'>Addresses <span></span></div>
+      <div class='content clusterize-scroll' id='addresses-scroll-area'>
+        <table>
+          <tbody id="addresses-content-area" class="clusterize-content">
+            <tr class="clusterize-no-data">
+              <td>Loading data…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id='utxos'>
+      <div class='label'>Utxos <span></span></div>
+      <div class='content clusterize-scroll' id='utxos-scroll-area'>
+        <table>
+          <tbody id="utxos-content-area" class="clusterize-content">
+            <tr class="clusterize-no-data">
+              <td>Loading data…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </main>
 </body>
 <script>
@@ -312,6 +348,9 @@ var run = function() {
           render('tokens', r.t ? r.t : [])
           render('unconfirmed', r.u ? r.u : [])
           render('confirmed',   r.c ? r.c : [])
+          render('graphs', r.g ? r.g : [])
+          render('addresses', r.a ? r.a : [])
+          render('utxos', r.x ? r.x : [])
         })
       }
     } catch (e) {
@@ -361,6 +400,33 @@ var render = function(type, items) {
         rows:       data,
         scrollElem:  document.getElementById('unconfirmed-scroll-area'),
         contentElem: document.getElementById('unconfirmed-content-area')
+      })
+      break;
+    case 'graphs':
+      document.querySelector("#graphs .label span").innerHTML = "(" + items.length + ")"
+
+      window.graphs_clusterize = new Clusterize({
+        rows:       data,
+        scrollElem:  document.getElementById('graphs-scroll-area'),
+        contentElem: document.getElementById('graphs-content-area')
+      })
+      break;
+    case 'addresses':
+      document.querySelector("#addresses .label span").innerHTML = "(" + items.length + ")"
+
+      window.unconfirmed_clusterize = new Clusterize({
+        rows:       data,
+        scrollElem:  document.getElementById('addresses-scroll-area'),
+        contentElem: document.getElementById('addresses-content-area')
+      })
+      break;
+    case 'utxos':
+      document.querySelector("#utxos .label span").innerHTML = "(" + items.length + ")"
+
+      window.unconfirmed_clusterize = new Clusterize({
+        rows:       data,
+        scrollElem:  document.getElementById('utxos-scroll-area'),
+        contentElem: document.getElementById('utxos-content-area')
       })
       break;
   }
