@@ -168,6 +168,22 @@ main {
 .clusterize-no-data td {
     color: #fff;
 }
+.toggle-section {
+    float:right;
+}
+.toggle-section::before {
+  content: "[hide]";
+}
+.hide-section .toggle-section::before {
+  content: "[show]";
+}
+.hide-section .clusterize-scroll {
+    height:0;
+}
+
+.toggle-section:hover {
+    cursor:pointer;
+}
 </style>
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
@@ -219,7 +235,7 @@ main {
   </div>
   <main>
     <div id='tokens'>
-      <div class='label'>Tokens <span></span></div>
+      <div class='label'>Tokens <span></span><div class="toggle-section"></div></div>
       <div class='content clusterize-scroll' id='tokens-scroll-area'>
         <table>
           <tbody id="tokens-content-area" class="clusterize-content">
@@ -231,7 +247,7 @@ main {
       </div>
     </div>
     <div id='unconfirmed'>
-      <div class='label'>Unconfirmed <span></span></div>
+      <div class='label'>Unconfirmed <span></span><div class="toggle-section"></div></div>
       <div class='content clusterize-scroll' id='unconfirmed-scroll-area'>
         <table>
           <tbody id="unconfirmed-content-area" class="clusterize-content">
@@ -243,10 +259,46 @@ main {
       </div>
     </div>
     <div id='confirmed'>
-      <div class='label'>Confirmed <span></span></div>
+      <div class='label'>Confirmed <span></span><div class="toggle-section"></div></div>
       <div class='content clusterize-scroll' id='confirmed-scroll-area'>
         <table>
           <tbody id="confirmed-content-area" class="clusterize-content">
+            <tr class="clusterize-no-data">
+              <td>Loading data…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id='graphs'>
+      <div class='label'>Graphs <span></span><div class="toggle-section"></div></div>
+      <div class='content clusterize-scroll' id='graphs-scroll-area'>
+        <table>
+          <tbody id="graphs-content-area" class="clusterize-content">
+            <tr class="clusterize-no-data">
+              <td>Loading data…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id='addresses'>
+      <div class='label'>Addresses <span></span><div class="toggle-section"></div></div>
+      <div class='content clusterize-scroll' id='addresses-scroll-area'>
+        <table>
+          <tbody id="addresses-content-area" class="clusterize-content">
+            <tr class="clusterize-no-data">
+              <td>Loading data…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id='utxos'>
+      <div class='label'>Utxos <span></span><div class="toggle-section"></div></div>
+      <div class='content clusterize-scroll' id='utxos-scroll-area'>
+        <table>
+          <tbody id="utxos-content-area" class="clusterize-content">
             <tr class="clusterize-no-data">
               <td>Loading data…</td>
             </tr>
@@ -262,6 +314,13 @@ var endpoint = window.location.origin + "/q/";
 var source   = document.getElementById("grid-template").innerHTML;
 var template = Handlebars.compile(source);
 var editor;
+
+['tokens', 'unconfirmed', 'confirmed', 'graphs', 'addresses', 'utxos'].forEach((v) => {
+  document.querySelector("#" + v + " .label .toggle-section").onclick = function() {
+    document.getElementById(v).classList.toggle('hide-section');
+  };
+});
+
 document.addEventListener("DOMContentLoaded", function(e) {
   editor = ace.edit("editor");
   editor.session.setMode("ace/mode/json");
@@ -312,6 +371,9 @@ var run = function() {
           render('tokens', r.t ? r.t : [])
           render('unconfirmed', r.u ? r.u : [])
           render('confirmed',   r.c ? r.c : [])
+          render('graphs', r.g ? r.g : [])
+          render('addresses', r.a ? r.a : [])
+          render('utxos', r.x ? r.x : [])
         })
       }
     } catch (e) {
@@ -361,6 +423,33 @@ var render = function(type, items) {
         rows:       data,
         scrollElem:  document.getElementById('unconfirmed-scroll-area'),
         contentElem: document.getElementById('unconfirmed-content-area')
+      })
+      break;
+    case 'graphs':
+      document.querySelector("#graphs .label span").innerHTML = "(" + items.length + ")"
+
+      window.graphs_clusterize = new Clusterize({
+        rows:       data,
+        scrollElem:  document.getElementById('graphs-scroll-area'),
+        contentElem: document.getElementById('graphs-content-area')
+      })
+      break;
+    case 'addresses':
+      document.querySelector("#addresses .label span").innerHTML = "(" + items.length + ")"
+
+      window.unconfirmed_clusterize = new Clusterize({
+        rows:       data,
+        scrollElem:  document.getElementById('addresses-scroll-area'),
+        contentElem: document.getElementById('addresses-content-area')
+      })
+      break;
+    case 'utxos':
+      document.querySelector("#utxos .label span").innerHTML = "(" + items.length + ")"
+
+      window.unconfirmed_clusterize = new Clusterize({
+        rows:       data,
+        scrollElem:  document.getElementById('utxos-scroll-area'),
+        contentElem: document.getElementById('utxos-content-area')
       })
       break;
   }
