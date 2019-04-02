@@ -79,10 +79,19 @@ app.get(/^\/q\/(.+)/, cors(), limiter, async function(req, res) {
     res.json(result)
   }
 })
-app.get(/^\/explorer\/(.+)/, function(req, res) {
-  let encoded = req.params[0]
+const decode = (encoded) => {
   let decoded = Buffer.from(encoded, 'base64').toString()
-  res.render('explorer', { code: decoded })
+  try {
+    let unpretty = JSON.stringify(JSON.parse(decoded));
+
+    if (decoded == unpretty) {
+      decoded = JSON.stringify(JSON.parse(decoded), null, 2);
+    }
+  } catch (e) {}
+  return decoded;
+};
+app.get(/^\/explorer\/(.+)/, function(req, res) {
+  res.render('explorer', { code: decode(req.params[0]) })
 });
 app.get('/explorer', function (req, res) {
   res.render('explorer', { code: JSON.stringify(config.query, null, 2) })
@@ -91,9 +100,7 @@ app.get('/', function(req, res) {
   res.redirect('/explorer2')
 });
 app.get(/^\/explorer2\/(.+)/, function(req, res) {
-  let encoded = req.params[0]
-  let decoded = Buffer.from(encoded, 'base64').toString()
-  res.render('explorer2', { code: decoded })
+  res.render('explorer2', { code: decode(req.params[0]) })
 });
 app.get('/explorer2', function (req, res) {
   res.render('explorer2', { code: JSON.stringify(config.query, null, 2) })
