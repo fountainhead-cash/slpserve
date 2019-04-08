@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require('express')
-const slpqueryd = require('fountainhead-slpqueryd')
+const slpqueryd = require('fountainhead-core').slpqueryd
 const PQueue = require('p-queue')
 const ip = require('ip')
 const app = express()
