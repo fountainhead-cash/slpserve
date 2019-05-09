@@ -36,7 +36,7 @@ app.use(cors())
 app.enable("trust proxy")
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute window
-  max: 60, // 60 requests per windowMs
+  max: 600, // 60 requests per windowMs
   handler: function(req, res, /*next*/) {
     res.format({
       json: function() {
@@ -97,13 +97,19 @@ app.get('/explorer', function (req, res) {
   res.render('explorer', { code: JSON.stringify(config.query, null, 2) })
 });
 app.get('/', function(req, res) {
-  res.redirect('/explorer2')
+  res.redirect('/explorer')
 });
 app.get(/^\/explorer2\/(.+)/, function(req, res) {
-  res.render('explorer2', { code: decode(req.params[0]) })
+  res.redirect('/explorer')
 });
 app.get('/explorer2', function (req, res) {
-  res.render('explorer2', { code: JSON.stringify(config.query, null, 2) })
+  res.redirect('/explorer')
+});
+app.get(/^\/explorer-tabular\/(.+)/, function(req, res) {
+  res.render('explorer-tabular', { code: decode(req.params[0]) })
+});
+app.get('/explorer-tabular', function (req, res) {
+  res.render('explorer-tabular', { code: JSON.stringify(config.query, null, 2) })
 });
 app.get('/', function(req, res) {
   res.redirect('/explorer')
