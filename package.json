@@ -1,6 +1,6 @@
 {
   "name": "fountainhead-slpserve",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "SLPDB microservice",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "ejs": "^2.6.1",
     "express": "^4.16.3",
     "express-rate-limit": "^3.3.2",
-    "fountainhead-slpqueryd": "^0.2.1",
+    "fountainhead-core": "0.0.2",
     "ip": "^1.1.5",
     "p-queue": "^3.0.0"
   }

@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require('express')
-const slpqueryd = require('fountainhead-slpqueryd')
+const slpqueryd = require('fountainhead-core').slpqueryd
 const PQueue = require('p-queue')
 const ip = require('ip')
 const app = express()
@@ -36,7 +36,7 @@ app.use(cors())
 app.enable("trust proxy")
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute window
-  max: 60, // 60 requests per windowMs
+  max: 600, // 60 requests per windowMs
   handler: function(req, res, /*next*/) {
     res.format({
       json: function() {
@@ -79,24 +79,37 @@ app.get(/^\/q\/(.+)/, cors(), limiter, async function(req, res) {
     res.json(result)
   }
 })
-app.get(/^\/explorer\/(.+)/, function(req, res) {
-  let encoded = req.params[0]
+const decode = (encoded) => {
   let decoded = Buffer.from(encoded, 'base64').toString()
-  res.render('explorer', { code: decoded })
+  try {
+    let unpretty = JSON.stringify(JSON.parse(decoded));
+
+    if (decoded == unpretty) {
+      decoded = JSON.stringify(JSON.parse(decoded), null, 2);
+    }
+  } catch (e) {}
+  return decoded;
+};
+app.get(/^\/explorer\/(.+)/, function(req, res) {
+  res.render('explorer', { code: decode(req.params[0]) })
 });
 app.get('/explorer', function (req, res) {
   res.render('explorer', { code: JSON.stringify(config.query, null, 2) })
 });
 app.get('/', function(req, res) {
-  res.redirect('/explorer2')
+  res.redirect('/explorer')
 });
 app.get(/^\/explorer2\/(.+)/, function(req, res) {
-  let encoded = req.params[0]
-  let decoded = Buffer.from(encoded, 'base64').toString()
-  res.render('explorer2', { code: decoded })
+  res.redirect('/explorer')
 });
 app.get('/explorer2', function (req, res) {
-  res.render('explorer2', { code: JSON.stringify(config.query, null, 2) })
+  res.redirect('/explorer')
+});
+app.get(/^\/explorer-tabular\/(.+)/, function(req, res) {
+  res.render('explorer-tabular', { code: decode(req.params[0]) })
+});
+app.get('/explorer-tabular', function (req, res) {
+  res.render('explorer-tabular', { code: JSON.stringify(config.query, null, 2) })
 });
 app.get('/', function(req, res) {
   res.redirect('/explorer')

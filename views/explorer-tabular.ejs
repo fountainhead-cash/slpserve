@@ -1,0 +1,440 @@
+<html>
+<head>
+<title>SLPDB Fountainhead</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 12px;
+  margin: 0;
+  background: #202124;
+}
+.content {
+  border-bottom: 1px rgba(255,255,255,0.1) solid;
+}
+.container {
+  background: #202124;
+  color: white;
+}
+header {
+  display: flex;
+}
+.flexible {
+  flex-grow: 1;
+}
+header > a {
+  display: inline-block;
+  color: white;
+  font-family: "Helvetica Neue", helvetica, arial;
+  font-size: 12px;
+  text-decoration: none;
+  font-weight: bold;
+}
+header > .item {
+  border-left: 1px solid rgba(255,255,255,0.3);
+  padding: 0 10px;
+  margin: 10px 0;
+}
+header > .dark {
+  background: rgba(0,0,0,0.8);
+  margin: 0;
+  padding: 10px;
+  font-weight: bold;
+}
+.align-center {
+  text-align: center;
+}
+.top.tx {
+  width: 100px;
+}
+.top._id {
+  width: 50px;
+}
+.top.blk {
+  width: 200px;
+}
+pre {
+  white-space: pre-wrap; 
+}
+.table {
+  overflow: auto;
+}
+table {
+  background: white;
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+}
+th td {
+  text-align: center;
+}
+td.top {
+  background: whitesmoke;
+  font-weight: bold;
+  position: relative;
+}
+td.top i {
+  margin-right: 5px;
+}
+td {
+  -webkit-transition: width 1s;
+  transition: width 1s;
+}
+td.top:hover {
+  background: rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+td.top.expanded {
+  background: rgba(0,0,0,0.2);
+  width: 70%;
+}
+td {
+  word-wrap:break-word;
+  font-size: 12px;
+  border: 1px solid whitesmoke;
+  padding: 5px;
+  color: rgba(0,0,0,0.7);
+}
+.btn {
+  padding: 5px 20px;
+  border-radius: 2px;
+  text-decoration: none;
+  border: 2px solid #2a2a2a;
+}
+.btn-border {
+  color: #2a2a2a;
+}
+.btn-filled {
+  background: #2a2a2a;
+  color: #ffffff;
+}
+#editor {
+  width: 100%;
+  height: 200px;
+}
+.label {
+  background: #202124;
+  color: white;
+  padding: 5px 10px;
+}
+button {
+    padding: 10px;
+    background: #202124;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+button:focus {
+  outline: 0;
+}
+.spinner {
+  color: white;
+  text-align: center;
+  padding: 100px;
+}
+input.url:focus{
+  outline: none;
+}
+input.url {
+  padding: 10px;
+  background: rgb(57, 59, 66);
+  border: none;
+  color: white;
+  font-family: Menlo, monaco, Courier;
+  font-size: 11px;
+  transition: background 1000ms ease-in;
+  border-radius: 0;
+  -webkit-appearance:none;
+}
+input.url.updated {
+  background: gold;
+}
+a.brand {
+  margin: 10px;
+  font-size: 16px;
+  font-family: "Helvetica Neue", helvetica, arial;
+}
+.flex {
+  display: flex;
+}
+.label {
+  padding: 10px;
+}
+td.cell {
+  max-height: 100px;
+}
+.toggle-section {
+    float:right;
+}
+.toggle-section::before {
+  content: "[hide]";
+}
+.hide-section .toggle-section::before {
+  content: "[show]";
+}
+.hide-section .content {
+    display:none;
+}
+
+.toggle-section:hover {
+    cursor:pointer;
+}
+</style>
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/ace.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/mode-json.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+<script id="grid-template" type="text/x-handlebars-template">
+  <table>
+  <tr>
+    {{#each keys}}
+      <td class='top {{this}}'><i class='fas fa-expand-arrows-alt'></i>{{this}}</td>
+    {{/each}}
+  </tr>
+  {{#each items}}
+    <tr>
+      {{#each values}}
+      <td valign='top' class='cell {{k}}'>{{{v}}}</td>
+      {{/each}}
+    </tr>
+  {{/each}}
+  </table>
+</script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+
+var endpoint = window.location.origin + "/q/";
+var source   = document.getElementById("grid-template").innerHTML;
+var template = Handlebars.compile(source);
+var editor;
+document.addEventListener("DOMContentLoaded", function(e) {
+  ['tokens', 'unconfirmed', 'confirmed', 'graphs', 'addresses', 'utxos'].forEach((v) => {
+    document.querySelector("#" + v + " .label .toggle-section").onclick = function() {
+      document.getElementById(v).classList.toggle('hide-section');
+    };
+  });
+
+  editor = ace.edit("editor");
+  editor.session.setMode("ace/mode/json");
+  editor.setShowPrintMargin(false);
+  editor.setOptions({
+    maxLines: Infinity,
+    minLines: 3,
+    tabSize: 2,
+    useSoftTabs: true
+  })
+  editor.getSession().on('change', function() {
+    var query = editor.getValue();
+    history.pushState(null, null, window.location.origin + "/explorer-tabular/" + btoa(query));
+    updateUrl(query)
+  })
+  run()
+  document.querySelector("#query").addEventListener("click", function(e) {
+    run()
+  })
+  document.body.addEventListener("click", function(e) {
+    if (e.target.classList.contains("top")) {
+      if (e.target.classList.contains("expanded")) {
+        e.target.classList.remove("expanded");
+      } else {
+        e.target.classList.add("expanded");
+      }
+    }
+  })
+})
+var run = function() {
+  var query = editor.getValue();
+  console.log("query = ", query)
+  if (query && query.length > 0) {
+    try {
+      // make sure it's JSON
+      var parsed = JSON.parse(query)
+        console.log(parsed)
+      if ((parsed && parsed.request) || (parsed && parsed.v) ) {
+          updateUrl(query)
+          document.querySelector("main #tokens .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
+          document.querySelector("main #confirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
+          document.querySelector("main #unconfirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
+
+          fetch(endpoint + btoa(query), {
+          }).then(function(r) {
+            return r.json()
+          }).then(function(r) {
+            if (r.t) {
+              render("#tokens", r.t)
+            } else {
+              render("#tokens", [])
+            }
+            if (r.u) {
+              render("#unconfirmed", r.u)
+            } else {
+              render("#unconfirmed", [])
+            }
+            if (r.c) {
+              render("#confirmed", r.c)
+            } else {
+              render("#confirmed", [])
+            }
+            if (r.g) {
+              render("#graphs", r.g)
+            } else {
+              render("#graphs", [])
+            }
+            if (r.a) {
+              render("#addresses", r.a)
+            } else {
+              render("#addresses", [])
+            }
+            if (r.x) {
+              render("#utxos", r.x)
+            } else {
+              render("#utxos", [])
+            }
+          })
+      }
+    } catch (e) {
+      console.log("query invalid json", e)
+    }
+  }
+}
+var updateUrl = function(query) {
+  var base64 = btoa(query)
+  var u = document.querySelector(".url");
+  u.value = endpoint + base64;
+  u.classList.add("updated");
+  setTimeout(function() {
+    u.classList.remove("updated");
+  }, 500)
+}
+var matryoshka = function(nested_keys, rows) {
+  return rows.map(function(row) {
+    return {
+      values: nested_keys.map(function(k) {
+        if (Array.isArray(row[k])) {
+          let nested_nested_keys = Object.keys(row[k][0])
+          var rendered = matryoshka(nested_nested_keys, row[k])
+          let nested_nested = template({
+            keys: nested_nested_keys,
+            items: rendered
+          })
+          return { k: null, v: nested_nested }
+        } else if (typeof row[k] === 'object') {
+          var c = JSON.stringify(row[k], null, 2)
+          return { k: k, v: "<pre>" + c + "</pre>" }
+        } else {
+          return { k: k, v: Handlebars.Utils.escapeExpression(row[k]) }
+        }
+      })
+    }
+  })
+}
+var render = function(selector, items) {
+  if (items.length > 0) {
+    // sort items by key size
+    var copied_items = JSON.parse(JSON.stringify(items))
+    var sorted_items = copied_items.sort(function(a, b) {
+      return Object.keys(b).length - Object.keys(a).length;
+    })
+    var keys = Object.keys(sorted_items[0]).sort(function(a,b) {
+      return a.length - b.length;
+    })
+    .filter(function(k) {
+      return k !== "_id"
+    })
+    document.querySelector(selector + " .label span").innerHTML = "(" + items.length + ")"
+
+    document.querySelector(selector + " .content").innerHTML = template({
+      keys: keys,
+      items: items.map(function(i) {
+      console.log("i = ", i)
+        return {values: keys.map(function(key) {
+          console.log("key = ", key)
+          if (Array.isArray(i[key])) {
+            let rows = i[key];
+            if (rows.length > 0) {
+              let first_row = i[key][0];
+              console.log('rows = ', rows)
+              console.log('first row = ', first_row)
+              let nested_keys = Object.keys(first_row)
+              var rendered = matryoshka(nested_keys, rows)
+              let nested = template({
+                keys: nested_keys,
+                items: rendered
+              })
+              return { k: null, v: nested }
+            } else {
+              return { k: null, v: "" }
+            }
+          } else if (typeof i[key] === 'object' && i[key]) {
+            //return JSON.stringify(i[key], null, 2);
+            let row = i[key];
+            let rows = [row];
+            let nested_keys = Object.keys(row)
+            var rendered = matryoshka(nested_keys, rows)
+            let nested = template({
+              keys: nested_keys,
+              items: rendered
+            })
+            return { k: null, v: nested }
+          } else {
+            return { k: null, v: Handlebars.Utils.escapeExpression(i[key]) }
+          }
+        })}
+      })
+    })
+  } else {
+    document.querySelector(selector + " .label span").innerHTML = "(0)"
+    document.querySelector(selector + " .content").innerHTML = "";
+  }
+}
+</script>
+</head>
+<body>
+  <div class='container'>
+    <header>
+      <a href='/' class='brand'>SLPDB Fountainhead</a>
+      <div class='flexible'></div>
+      <a target='_blank' href='/explorer' class='item'><i class='fas fa-wrench'></i> View Raw</a>
+      <a target='_blank' href='https://docs.fountainhead.cash' class='item'><i class='fas fa-book'></i> Documentation</a>
+    </header>
+    <div class='jumbotron align-center header'>
+      <div id='editor'><%=code%></div>
+      <div class='flex'>
+        <span class='label'>API endpoint</span>
+        <input readonly class='flexible url'>
+        <button id='query'>Run query</button>
+      </div>
+    </div>
+  </div>
+  <main>
+    <div id='tokens'>
+      <div class='label'>Tokens <span></span><div class="toggle-section"></div></div>
+      <div class='content'></div>
+    </div>
+    <div id='unconfirmed'>
+      <div class='label'>Unconfirmed <span></span><div class="toggle-section"></div></div>
+      <div class='content'></div>
+    </div>
+    <div id='confirmed'>
+      <div class='label'>Confirmed <span></span><div class="toggle-section"></div></div>
+      <div class='content'></div>
+    </div>
+    <div id='graphs'>
+      <div class='label'>Graphs <span></span><div class="toggle-section"></div></div>
+      <div class='content'></div>
+    </div>
+    <div id='addresses'>
+      <div class='label'>Addresses <span></span><div class="toggle-section"></div></div>
+      <div class='content'></div>
+    </div>
+    <div id='utxos'>
+      <div class='label'>Utxos <span></span><div class="toggle-section"></div></div>
+      <div class='content'></div>
+    </div>
+  </main>
+</body>
+</html>
