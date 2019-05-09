@@ -166,6 +166,22 @@ a.brand {
 td.cell {
   max-height: 100px;
 }
+.toggle-section {
+    float:right;
+}
+.toggle-section::before {
+  content: "[hide]";
+}
+.hide-section .toggle-section::before {
+  content: "[show]";
+}
+.hide-section .content {
+    display:none;
+}
+
+.toggle-section:hover {
+    cursor:pointer;
+}
 </style>
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
@@ -196,6 +212,12 @@ var source   = document.getElementById("grid-template").innerHTML;
 var template = Handlebars.compile(source);
 var editor;
 document.addEventListener("DOMContentLoaded", function(e) {
+  ['tokens', 'unconfirmed', 'confirmed', 'graphs', 'addresses', 'utxos'].forEach((v) => {
+    document.querySelector("#" + v + " .label .toggle-section").onclick = function() {
+      document.getElementById(v).classList.toggle('hide-section');
+    };
+  });
+
   editor = ace.edit("editor");
   editor.session.setMode("ace/mode/json");
   editor.setShowPrintMargin(false);
@@ -256,6 +278,21 @@ var run = function() {
               render("#confirmed", r.c)
             } else {
               render("#confirmed", [])
+            }
+            if (r.g) {
+              render("#graphs", r.g)
+            } else {
+              render("#graphs", [])
+            }
+            if (r.a) {
+              render("#addresses", r.a)
+            } else {
+              render("#addresses", [])
+            }
+            if (r.x) {
+              render("#utxos", r.x)
+            } else {
+              render("#utxos", [])
             }
           })
       }
@@ -375,15 +412,27 @@ var render = function(selector, items) {
   </div>
   <main>
     <div id='tokens'>
-      <div class='label'>Tokens <span></span></div>
+      <div class='label'>Tokens <span></span><div class="toggle-section"></div></div>
       <div class='content'></div>
     </div>
     <div id='unconfirmed'>
-      <div class='label'>Unconfirmed <span></span></div>
+      <div class='label'>Unconfirmed <span></span><div class="toggle-section"></div></div>
       <div class='content'></div>
     </div>
     <div id='confirmed'>
-      <div class='label'>Confirmed <span></span></div>
+      <div class='label'>Confirmed <span></span><div class="toggle-section"></div></div>
+      <div class='content'></div>
+    </div>
+    <div id='graphs'>
+      <div class='label'>Graphs <span></span><div class="toggle-section"></div></div>
+      <div class='content'></div>
+    </div>
+    <div id='addresses'>
+      <div class='label'>Addresses <span></span><div class="toggle-section"></div></div>
+      <div class='content'></div>
+    </div>
+    <div id='utxos'>
+      <div class='label'>Utxos <span></span><div class="toggle-section"></div></div>
       <div class='content'></div>
     </div>
   </main>
