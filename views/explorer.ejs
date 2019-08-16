@@ -308,7 +308,9 @@ main {
     </div>
   </main>
 </body>
+<script src="/buffer.min.js"></script>
 <script>
+const btoa_ext = buf => Buffer.Buffer.from(buf).toString('base64')
 
 var endpoint = window.location.origin + "/q/";
 var source   = document.getElementById("grid-template").innerHTML;
@@ -333,7 +335,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
   })
   editor.getSession().on('change', function() {
     var query = editor.getValue();
-    history.pushState(null, null, window.location.origin + "/explorer/" + btoa(query));
+    history.pushState(null, null, window.location.origin + "/explorer/" + btoa_ext(query));
     updateUrl(query)
   })
   run()
@@ -364,7 +366,7 @@ var run = function() {
         //document.querySelector("main #confirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
         //document.querySelector("main #unconfirmed .content").innerHTML = "<div class='spinner'><i class='fas fa-4x fa-circle-notch fa-spin'></i></div>";
 
-        fetch(endpoint + btoa(query), {
+        fetch(endpoint + btoa_ext(query), {
         }).then(function(r) {
           return r.json()
         }).then(function(r) {
@@ -382,7 +384,7 @@ var run = function() {
   }
 }
 var updateUrl = function(query) {
-  var base64 = btoa(query)
+  var base64 = btoa_ext(query)
   var u = document.querySelector(".url");
   u.value = endpoint + base64;
   u.classList.add("updated");

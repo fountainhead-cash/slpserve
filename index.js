@@ -16,7 +16,8 @@ const config = {
   "url": process.env.db_url ? process.env.db_url : "mongodb://localhost:27017",
   "port": Number.parseInt(process.env.slpserve_port ? process.env.slpserve_port : 3000),
   "timeout": Number.parseInt(process.env.slpserve_timeout ? process.env.slpserve_timeout : 30000),
-  "log": process.env.slpserve_log ? process.env.slpserve_log == 'true' : true
+  "log": process.env.slpserve_log ? process.env.slpserve_log == 'true' : true,
+  "max_request": process.env.max_request ? Number.parseInt(process.env.max_request) : 1000000,
 };
 
 const concurrency = ((config.concurrency && config.concurrency.aggregate) ? config.concurrency.aggregate : 3)
@@ -33,6 +34,9 @@ if (process.env.whitelist) {
   whitelist = process.env.whitelist.split(',')
 }
 app.use(cors())
+app.use(express.json({
+  limit: config.max_request
+}))
 app.enable("trust proxy")
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute window
@@ -53,9 +57,26 @@ const limiter = rateLimit({
     return false
   }
 })
-app.get(/^\/q\/(.+)/, cors(), limiter, async function(req, res) {
-  var encoded = req.params[0];
-  let r = JSON.parse(new Buffer(encoded, "base64").toString());
+
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError) {
+    return res.status(400).send(JSON.stringify({
+      error: "Invalid JSON"
+    }))
+  }
+
+  if (err.hasOwnProperty('message') && err.message === 'request entity too large') {
+    return res.status(400).send(JSON.stringify({
+      error: "Request body too large"
+    }))
+  }
+  console.error(err);
+  res.status(500).send();
+});
+
+
+const handle_query = async (decoded, res) => {
+  let r = decoded
   if (r.q && r.q.aggregate) {
     // add to aggregate queue
     console.log("# Aggregate query. Adding to queue", queue.size)
@@ -78,7 +99,18 @@ app.get(/^\/q\/(.+)/, cors(), limiter, async function(req, res) {
     }
     res.json(result)
   }
+};
+
+app.post('/q', cors(), limiter, async function(req, res) {
+  const encoded = req.body
+  await handle_query(encoded, res)
+});
+app.get(/^\/q\/(.+)/, cors(), limiter, async function(req, res) {
+  const encoded = req.params[0];
+  const decoded = JSON.parse(new Buffer(encoded, "base64").toString());
+  await handle_query(decoded, res)
 })
+
 const decode = (encoded) => {
   let decoded = Buffer.from(encoded, 'base64').toString()
   try {
