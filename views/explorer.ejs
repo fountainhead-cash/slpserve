@@ -306,6 +306,18 @@ main {
         </table>
       </div>
     </div>
+    <div id='statuses'>
+      <div class='label'>Statuses <span></span><div class="toggle-section"></div></div>
+      <div class='content clusterize-scroll' id='statuses-scroll-area'>
+        <table>
+          <tbody id="statuses-content-area" class="clusterize-content">
+            <tr class="clusterize-no-data">
+              <td>Loading data…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </main>
 </body>
 <script src="/buffer.min.js"></script>
@@ -317,7 +329,7 @@ var source   = document.getElementById("grid-template").innerHTML;
 var template = Handlebars.compile(source);
 var editor;
 
-['tokens', 'unconfirmed', 'confirmed', 'graphs', 'addresses', 'utxos'].forEach((v) => {
+['tokens', 'unconfirmed', 'confirmed', 'graphs', 'addresses', 'utxos', 'statuses'].forEach((v) => {
   document.querySelector("#" + v + " .label .toggle-section").onclick = function() {
     document.getElementById(v).classList.toggle('hide-section');
   };
@@ -376,6 +388,7 @@ var run = function() {
           render('graphs', r.g ? r.g : [])
           render('addresses', r.a ? r.a : [])
           render('utxos', r.x ? r.x : [])
+          render('statuses', r.s ? r.s : [])
         })
       }
     } catch (e) {
@@ -404,7 +417,7 @@ var render = function(type, items) {
       document.querySelector("#tokens .label span").innerHTML = "(" + items.length + ")"
 
       window.confirmed_clusterize = new Clusterize({
-        rows:       data,
+        rows:        data,
         scrollElem:  document.getElementById('tokens-scroll-area'),
         contentElem: document.getElementById('tokens-content-area')
       })
@@ -413,7 +426,7 @@ var render = function(type, items) {
       document.querySelector("#confirmed .label span").innerHTML = "(" + items.length + ")"
 
       window.confirmed_clusterize = new Clusterize({
-        rows:       data,
+        rows:        data,
         scrollElem:  document.getElementById('confirmed-scroll-area'),
         contentElem: document.getElementById('confirmed-content-area')
       })
@@ -422,7 +435,7 @@ var render = function(type, items) {
       document.querySelector("#unconfirmed .label span").innerHTML = "(" + items.length + ")"
 
       window.unconfirmed_clusterize = new Clusterize({
-        rows:       data,
+        rows:        data,
         scrollElem:  document.getElementById('unconfirmed-scroll-area'),
         contentElem: document.getElementById('unconfirmed-content-area')
       })
@@ -431,7 +444,7 @@ var render = function(type, items) {
       document.querySelector("#graphs .label span").innerHTML = "(" + items.length + ")"
 
       window.graphs_clusterize = new Clusterize({
-        rows:       data,
+        rows:        data,
         scrollElem:  document.getElementById('graphs-scroll-area'),
         contentElem: document.getElementById('graphs-content-area')
       })
@@ -440,7 +453,7 @@ var render = function(type, items) {
       document.querySelector("#addresses .label span").innerHTML = "(" + items.length + ")"
 
       window.unconfirmed_clusterize = new Clusterize({
-        rows:       data,
+        rows:        data,
         scrollElem:  document.getElementById('addresses-scroll-area'),
         contentElem: document.getElementById('addresses-content-area')
       })
@@ -449,9 +462,18 @@ var render = function(type, items) {
       document.querySelector("#utxos .label span").innerHTML = "(" + items.length + ")"
 
       window.unconfirmed_clusterize = new Clusterize({
-        rows:       data,
+        rows:        data,
         scrollElem:  document.getElementById('utxos-scroll-area'),
         contentElem: document.getElementById('utxos-content-area')
+      })
+      break;
+    case 'statuses':
+      document.querySelector("#statuses .label span").innerHTML = "(" + items.length + ")"
+
+      window.unconfirmed_clusterize = new Clusterize({
+        rows:        data,
+        scrollElem:  document.getElementById('statuses-scroll-area'),
+        contentElem: document.getElementById('statuses-content-area')
       })
       break;
   }
