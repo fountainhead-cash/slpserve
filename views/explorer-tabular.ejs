@@ -212,7 +212,7 @@ var source   = document.getElementById("grid-template").innerHTML;
 var template = Handlebars.compile(source);
 var editor;
 document.addEventListener("DOMContentLoaded", function(e) {
-  ['tokens', 'unconfirmed', 'confirmed', 'graphs', 'addresses', 'utxos', 'statuses'].forEach((v) => {
+  ['tokens', 'unconfirmed', 'confirmed', 'graphs', 'statuses'].forEach((v) => {
     document.querySelector("#" + v + " .label .toggle-section").onclick = function() {
       document.getElementById(v).classList.toggle('hide-section');
     };
@@ -283,16 +283,6 @@ var run = function() {
               render("#graphs", r.g)
             } else {
               render("#graphs", [])
-            }
-            if (r.a) {
-              render("#addresses", r.a)
-            } else {
-              render("#addresses", [])
-            }
-            if (r.x) {
-              render("#utxos", r.x)
-            } else {
-              render("#utxos", [])
             }
             if (r.s) {
               render("#statuses", r.x)
@@ -430,14 +420,6 @@ var render = function(selector, items) {
     </div>
     <div id='graphs'>
       <div class='label'>Graphs <span></span><div class="toggle-section"></div></div>
-      <div class='content'></div>
-    </div>
-    <div id='addresses'>
-      <div class='label'>Addresses <span></span><div class="toggle-section"></div></div>
-      <div class='content'></div>
-    </div>
-    <div id='utxos'>
-      <div class='label'>Utxos <span></span><div class="toggle-section"></div></div>
       <div class='content'></div>
     </div>
     <div id='statuses'>

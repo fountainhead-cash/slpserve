@@ -282,30 +282,6 @@ main {
         </table>
       </div>
     </div>
-    <div id='addresses'>
-      <div class='label'>Addresses <span></span><div class="toggle-section"></div></div>
-      <div class='content clusterize-scroll' id='addresses-scroll-area'>
-        <table>
-          <tbody id="addresses-content-area" class="clusterize-content">
-            <tr class="clusterize-no-data">
-              <td>Loading data…</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div id='utxos'>
-      <div class='label'>Utxos <span></span><div class="toggle-section"></div></div>
-      <div class='content clusterize-scroll' id='utxos-scroll-area'>
-        <table>
-          <tbody id="utxos-content-area" class="clusterize-content">
-            <tr class="clusterize-no-data">
-              <td>Loading data…</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
     <div id='statuses'>
       <div class='label'>Statuses <span></span><div class="toggle-section"></div></div>
       <div class='content clusterize-scroll' id='statuses-scroll-area'>
@@ -329,7 +305,7 @@ var source   = document.getElementById("grid-template").innerHTML;
 var template = Handlebars.compile(source);
 var editor;
 
-['tokens', 'unconfirmed', 'confirmed', 'graphs', 'addresses', 'utxos', 'statuses'].forEach((v) => {
+['tokens', 'unconfirmed', 'confirmed', 'graphs', 'statuses'].forEach((v) => {
   document.querySelector("#" + v + " .label .toggle-section").onclick = function() {
     document.getElementById(v).classList.toggle('hide-section');
   };
@@ -386,8 +362,6 @@ var run = function() {
           render('unconfirmed', r.u ? r.u : [])
           render('confirmed',   r.c ? r.c : [])
           render('graphs', r.g ? r.g : [])
-          render('addresses', r.a ? r.a : [])
-          render('utxos', r.x ? r.x : [])
           render('statuses', r.s ? r.s : [])
         })
       }
@@ -447,24 +421,6 @@ var render = function(type, items) {
         rows:        data,
         scrollElem:  document.getElementById('graphs-scroll-area'),
         contentElem: document.getElementById('graphs-content-area')
-      })
-      break;
-    case 'addresses':
-      document.querySelector("#addresses .label span").innerHTML = "(" + items.length + ")"
-
-      window.unconfirmed_clusterize = new Clusterize({
-        rows:        data,
-        scrollElem:  document.getElementById('addresses-scroll-area'),
-        contentElem: document.getElementById('addresses-content-area')
-      })
-      break;
-    case 'utxos':
-      document.querySelector("#utxos .label span").innerHTML = "(" + items.length + ")"
-
-      window.unconfirmed_clusterize = new Clusterize({
-        rows:        data,
-        scrollElem:  document.getElementById('utxos-scroll-area'),
-        contentElem: document.getElementById('utxos-content-area')
       })
       break;
     case 'statuses':
