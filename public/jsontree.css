@@ -1,8 +1,7 @@
 .jstValue {
     white-space: pre-wrap;
     font-size: 14px;
-    font-weight: 400;
-    font-family: "Inconsolata", Monaco, monospace;
+    font-family: "Source Code Pro", Monaco, monospace;
 }
 .jstComma {
     white-space: pre-wrap;

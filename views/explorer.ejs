@@ -3,8 +3,9 @@
 <title>SLPDB Fountainhead</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
-@import url('https://fonts.googleapis.com/css?family=Inconsolata');
+
 body {
   font-family: 'Noto Sans TC', sans-serif;
   font-size: 12px;
@@ -189,8 +190,8 @@ main {
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.18.0/clusterize.min.css">
 <link rel="stylesheet" href="/jsontree.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/ace.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/mode-json.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.7/ace.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.7/mode-json.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.18.0/clusterize.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
 <script src="/jsontree.js"></script>
@@ -219,7 +220,7 @@ main {
 <body>
   <div class='container'>
     <header>
-      <a href='/' class='brand'>SLPDB Fountainhead</a>
+      <a href='/' class='brand'>SLPDB 1.0 Fountainhead</a>
       <div class='flexible'></div>
       <a target='_blank' href='/explorer-tabular' class='item'><i class='fas fa-screwdriver'></i> View Tabular</a>
       <a target='_blank' href='https://docs.fountainhead.cash' class='item'><i class='fas fa-book'></i> Documentation</a>
@@ -313,13 +314,15 @@ var editor;
 
 document.addEventListener("DOMContentLoaded", function(e) {
   editor = ace.edit("editor");
+  editor.setTheme("ace/theme/chrome");
   editor.session.setMode("ace/mode/json");
   editor.setShowPrintMargin(false);
   editor.setOptions({
     maxLines: Infinity,
     minLines: 3,
     tabSize: 2,
-    useSoftTabs: true
+    useSoftTabs: true,
+    fontFamily: 'Source Code Pro',
   })
   editor.getSession().on('change', function() {
     var query = editor.getValue();

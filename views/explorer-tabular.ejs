@@ -3,6 +3,7 @@
 <title>SLPDB Fountainhead</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
 body {
   font-family: 'Noto Sans TC', sans-serif;
@@ -219,13 +220,15 @@ document.addEventListener("DOMContentLoaded", function(e) {
   });
 
   editor = ace.edit("editor");
+  editor.setTheme("ace/theme/chrome");
   editor.session.setMode("ace/mode/json");
   editor.setShowPrintMargin(false);
   editor.setOptions({
     maxLines: Infinity,
     minLines: 3,
     tabSize: 2,
-    useSoftTabs: true
+    useSoftTabs: true,
+    fontFamily: 'Source Code Pro',
   })
   editor.getSession().on('change', function() {
     var query = editor.getValue();
@@ -391,7 +394,7 @@ var render = function(selector, items) {
 <body>
   <div class='container'>
     <header>
-      <a href='/' class='brand'>SLPDB Fountainhead</a>
+      <a href='/' class='brand'>SLPDB 1.0 Fountainhead</a>
       <div class='flexible'></div>
       <a target='_blank' href='/explorer' class='item'><i class='fas fa-wrench'></i> View Raw</a>
       <a target='_blank' href='https://docs.fountainhead.cash' class='item'><i class='fas fa-book'></i> Documentation</a>
