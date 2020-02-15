@@ -3,6 +3,7 @@
 <title>SLPDB Fountainhead</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
 body {
   font-family: 'Noto Sans TC', sans-serif;
@@ -212,20 +213,22 @@ var source   = document.getElementById("grid-template").innerHTML;
 var template = Handlebars.compile(source);
 var editor;
 document.addEventListener("DOMContentLoaded", function(e) {
-  ['tokens', 'unconfirmed', 'confirmed', 'graphs', 'addresses', 'utxos', 'statuses'].forEach((v) => {
+  ['tokens', 'unconfirmed', 'confirmed', 'graphs', 'statuses'].forEach((v) => {
     document.querySelector("#" + v + " .label .toggle-section").onclick = function() {
       document.getElementById(v).classList.toggle('hide-section');
     };
   });
 
   editor = ace.edit("editor");
+  editor.setTheme("ace/theme/chrome");
   editor.session.setMode("ace/mode/json");
   editor.setShowPrintMargin(false);
   editor.setOptions({
     maxLines: Infinity,
     minLines: 3,
     tabSize: 2,
-    useSoftTabs: true
+    useSoftTabs: true,
+    fontFamily: 'Source Code Pro',
   })
   editor.getSession().on('change', function() {
     var query = editor.getValue();
@@ -283,16 +286,6 @@ var run = function() {
               render("#graphs", r.g)
             } else {
               render("#graphs", [])
-            }
-            if (r.a) {
-              render("#addresses", r.a)
-            } else {
-              render("#addresses", [])
-            }
-            if (r.x) {
-              render("#utxos", r.x)
-            } else {
-              render("#utxos", [])
             }
             if (r.s) {
               render("#statuses", r.x)
@@ -401,7 +394,7 @@ var render = function(selector, items) {
 <body>
   <div class='container'>
     <header>
-      <a href='/' class='brand'>SLPDB Fountainhead</a>
+      <a href='/' class='brand'>SLPDB 1.0 Fountainhead</a>
       <div class='flexible'></div>
       <a target='_blank' href='/explorer' class='item'><i class='fas fa-wrench'></i> View Raw</a>
       <a target='_blank' href='https://docs.fountainhead.cash' class='item'><i class='fas fa-book'></i> Documentation</a>
@@ -416,6 +409,10 @@ var render = function(selector, items) {
     </div>
   </div>
   <main>
+    <div id='graphs'>
+      <div class='label'>Graphs <span></span><div class="toggle-section"></div></div>
+      <div class='content'></div>
+    </div>
     <div id='tokens'>
       <div class='label'>Tokens <span></span><div class="toggle-section"></div></div>
       <div class='content'></div>
@@ -426,18 +423,6 @@ var render = function(selector, items) {
     </div>
     <div id='confirmed'>
       <div class='label'>Confirmed <span></span><div class="toggle-section"></div></div>
-      <div class='content'></div>
-    </div>
-    <div id='graphs'>
-      <div class='label'>Graphs <span></span><div class="toggle-section"></div></div>
-      <div class='content'></div>
-    </div>
-    <div id='addresses'>
-      <div class='label'>Addresses <span></span><div class="toggle-section"></div></div>
-      <div class='content'></div>
-    </div>
-    <div id='utxos'>
-      <div class='label'>Utxos <span></span><div class="toggle-section"></div></div>
       <div class='content'></div>
     </div>
     <div id='statuses'>

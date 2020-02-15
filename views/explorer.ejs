@@ -3,8 +3,9 @@
 <title>SLPDB Fountainhead</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
-@import url('https://fonts.googleapis.com/css?family=Inconsolata');
+
 body {
   font-family: 'Noto Sans TC', sans-serif;
   font-size: 12px;
@@ -189,8 +190,8 @@ main {
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.18.0/clusterize.min.css">
 <link rel="stylesheet" href="/jsontree.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/ace.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/mode-json.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.7/ace.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.7/mode-json.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.18.0/clusterize.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
 <script src="/jsontree.js"></script>
@@ -219,7 +220,7 @@ main {
 <body>
   <div class='container'>
     <header>
-      <a href='/' class='brand'>SLPDB Fountainhead</a>
+      <a href='/' class='brand'>SLPDB 1.0 Fountainhead</a>
       <div class='flexible'></div>
       <a target='_blank' href='/explorer-tabular' class='item'><i class='fas fa-screwdriver'></i> View Tabular</a>
       <a target='_blank' href='https://docs.fountainhead.cash' class='item'><i class='fas fa-book'></i> Documentation</a>
@@ -234,6 +235,18 @@ main {
     </div>
   </div>
   <main>
+    <div id='graphs'>
+      <div class='label'>Graphs <span></span><div class="toggle-section"></div></div>
+      <div class='content clusterize-scroll' id='graphs-scroll-area'>
+        <table>
+          <tbody id="graphs-content-area" class="clusterize-content">
+            <tr class="clusterize-no-data">
+              <td>Loading data…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
     <div id='tokens'>
       <div class='label'>Tokens <span></span><div class="toggle-section"></div></div>
       <div class='content clusterize-scroll' id='tokens-scroll-area'>
@@ -270,42 +283,6 @@ main {
         </table>
       </div>
     </div>
-    <div id='graphs'>
-      <div class='label'>Graphs <span></span><div class="toggle-section"></div></div>
-      <div class='content clusterize-scroll' id='graphs-scroll-area'>
-        <table>
-          <tbody id="graphs-content-area" class="clusterize-content">
-            <tr class="clusterize-no-data">
-              <td>Loading data…</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div id='addresses'>
-      <div class='label'>Addresses <span></span><div class="toggle-section"></div></div>
-      <div class='content clusterize-scroll' id='addresses-scroll-area'>
-        <table>
-          <tbody id="addresses-content-area" class="clusterize-content">
-            <tr class="clusterize-no-data">
-              <td>Loading data…</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div id='utxos'>
-      <div class='label'>Utxos <span></span><div class="toggle-section"></div></div>
-      <div class='content clusterize-scroll' id='utxos-scroll-area'>
-        <table>
-          <tbody id="utxos-content-area" class="clusterize-content">
-            <tr class="clusterize-no-data">
-              <td>Loading data…</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
     <div id='statuses'>
       <div class='label'>Statuses <span></span><div class="toggle-section"></div></div>
       <div class='content clusterize-scroll' id='statuses-scroll-area'>
@@ -329,7 +306,7 @@ var source   = document.getElementById("grid-template").innerHTML;
 var template = Handlebars.compile(source);
 var editor;
 
-['tokens', 'unconfirmed', 'confirmed', 'graphs', 'addresses', 'utxos', 'statuses'].forEach((v) => {
+['tokens', 'unconfirmed', 'confirmed', 'graphs', 'statuses'].forEach((v) => {
   document.querySelector("#" + v + " .label .toggle-section").onclick = function() {
     document.getElementById(v).classList.toggle('hide-section');
   };
@@ -337,13 +314,15 @@ var editor;
 
 document.addEventListener("DOMContentLoaded", function(e) {
   editor = ace.edit("editor");
+  editor.setTheme("ace/theme/chrome");
   editor.session.setMode("ace/mode/json");
   editor.setShowPrintMargin(false);
   editor.setOptions({
     maxLines: Infinity,
     minLines: 3,
     tabSize: 2,
-    useSoftTabs: true
+    useSoftTabs: true,
+    fontFamily: 'Source Code Pro',
   })
   editor.getSession().on('change', function() {
     var query = editor.getValue();
@@ -386,8 +365,6 @@ var run = function() {
           render('unconfirmed', r.u ? r.u : [])
           render('confirmed',   r.c ? r.c : [])
           render('graphs', r.g ? r.g : [])
-          render('addresses', r.a ? r.a : [])
-          render('utxos', r.x ? r.x : [])
           render('statuses', r.s ? r.s : [])
         })
       }
@@ -447,24 +424,6 @@ var render = function(type, items) {
         rows:        data,
         scrollElem:  document.getElementById('graphs-scroll-area'),
         contentElem: document.getElementById('graphs-content-area')
-      })
-      break;
-    case 'addresses':
-      document.querySelector("#addresses .label span").innerHTML = "(" + items.length + ")"
-
-      window.unconfirmed_clusterize = new Clusterize({
-        rows:        data,
-        scrollElem:  document.getElementById('addresses-scroll-area'),
-        contentElem: document.getElementById('addresses-content-area')
-      })
-      break;
-    case 'utxos':
-      document.querySelector("#utxos .label span").innerHTML = "(" + items.length + ")"
-
-      window.unconfirmed_clusterize = new Clusterize({
-        rows:        data,
-        scrollElem:  document.getElementById('utxos-scroll-area'),
-        contentElem: document.getElementById('utxos-content-area')
       })
       break;
     case 'statuses':

@@ -17,7 +17,7 @@ const config = {
   "port": Number.parseInt(process.env.slpserve_port ? process.env.slpserve_port : 3000),
   "timeout": Number.parseInt(process.env.slpserve_timeout ? process.env.slpserve_timeout : 30000),
   "log": process.env.slpserve_log ? process.env.slpserve_log == 'true' : true,
-  "max_request": process.env.max_request ? Number.parseInt(process.env.max_request) : 1000000,
+  "max_request": process.env.max_request ? Number.parseInt(process.env.max_request) : 500,
 };
 
 const concurrency = ((config.concurrency && config.concurrency.aggregate) ? config.concurrency.aggregate : 3)
@@ -40,7 +40,7 @@ app.use(express.json({
 app.enable("trust proxy")
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute window
-  max: 600, // 60 requests per windowMs
+  max: config.max_request,
   handler: function(req, res, /*next*/) {
     res.format({
       json: function() {
