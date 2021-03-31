@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <title>SLPDB Fountainhead</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -190,10 +191,10 @@ main {
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.18.0/clusterize.min.css">
 <link rel="stylesheet" href="/jsontree.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.7/ace.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.7/mode-json.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.18.0/clusterize.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.7/ace.js" integrity="sha384-AaOm2erpSQk7UphBnXabizLwuzla6UQ3p144hr+eHq9zSRH3g7vrwqmI/oFDgUpV" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.7/mode-json.js" integrity="sha384-Ln/PE9p6C3iqRPorLcZqduP4ogn+1vwk8wQz6yHaMSxxcZuxMdkQMQQLpgielBnM" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.18.0/clusterize.min.js" integrity="sha384-Bqz84+7ilZh5vuxeq7x9quApI8TUgs5k6/XpDyjk0SS/wZ32pAR0o0/RHgPXRY6a" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js" integrity="sha384-hYk5B9UOsQeeI4MBc0EHXEqMaj8jB81VgMt0CTlfcyXe2QMTIQsrdMAEpTKW0e0y" crossorigin="anonymous"></script>
 <script src="/jsontree.js"></script>
 <script id="grid-template" type="text/x-handlebars-template">
   <table>
@@ -296,7 +297,6 @@ main {
       </div>
     </div>
   </main>
-</body>
 <script src="/buffer.min.js"></script>
 <script>
 const btoa_ext = buf => Buffer.Buffer.from(buf).toString('base64')
@@ -438,4 +438,5 @@ var render = function(type, items) {
   }
 }
 </script>
+</body>
 </html>
